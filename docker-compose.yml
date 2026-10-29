@@ -1,0 +1,59 @@
+# =====================================================================
+# Docker Compose - didarova-medina-student-api
+# Student: Didarova Medina | ID 37944 | Group IT2-2313
+# Start:   docker compose up -d --build
+# Secrets are read from .env (not committed). See .env.example.
+# =====================================================================
+name: didarova-medina-student-api
+
+services:
+  didarova-db:
+    image: postgres:16-alpine
+    container_name: didarova-medina-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-didarova_students}
+      POSTGRES_USER: ${POSTGRES_USER:-didarova}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+    volumes:
+      - didarova_pgdata:/var/lib/postgresql/data
+    networks:
+      - didarova-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+  didarova-app:
+    build:
+      context: .
+      args:
+        APP_VERSION: ${APP_VERSION:-v1.0-didarova-medina-37944}
+    image: didarova-medina-student-api:${APP_VERSION:-v1.0-didarova-medina-37944}
+    container_name: didarova-medina-app
+    restart: unless-stopped
+    depends_on:
+      didarova-db:
+        condition: service_healthy
+    environment:
+      # Service name "didarova-db" is used instead of localhost:
+      # inside a container, localhost is the container itself.
+      SPRING_DATASOURCE_URL: jdbc:postgresql://didarova-db:5432/${POSTGRES_DB:-didarova_students}
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:-didarova}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+      APP_VERSION: ${APP_VERSION:-v1.0-didarova-medina-37944}
+    ports:
+      - "8080:8080"
+    networks:
+      - didarova-net
+
+volumes:
+  didarova_pgdata:
+    name: didarova_medina_pgdata
+
+networks:
+  didarova-net:
+    name: didarova-medina-net
+    driver: bridge
