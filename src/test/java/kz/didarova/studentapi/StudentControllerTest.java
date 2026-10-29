@@ -5,6 +5,7 @@ import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -84,6 +85,24 @@ class StudentControllerTest {
         mockMvc.perform(get("/api/students/" + s.getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.email", is("medina.didarova@test.kz")));
+    }
+
+    @Test
+    void updateStudent() throws Exception {
+        Student s = saveMedina();
+        String changes = """
+                {"firstName":"Medina","lastName":"Didarova","email":"medina.didarova@test.kz",
+                 "groupName":"IT2-2313","course":4}
+                """;
+        mockMvc.perform(put("/api/students/" + s.getId()).contentType(MediaType.APPLICATION_JSON).content(changes))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.course", is(4)));
+    }
+
+    @Test
+    void updateNonexistentStudentReturns404() throws Exception {
+        mockMvc.perform(put("/api/students/99999").contentType(MediaType.APPLICATION_JSON).content(MEDINA_JSON))
+                .andExpect(status().isNotFound());
     }
 
     @Test

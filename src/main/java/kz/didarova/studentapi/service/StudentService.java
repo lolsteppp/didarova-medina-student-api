@@ -29,6 +29,17 @@ public class StudentService {
         return repository.save(student);
     }
 
+    /** UPDATE operation (added on feature/didarova-medina-crud by Didarova Medina). */
+    public Student update(Long id, Student changes) {
+        Student existing = findById(id);
+        existing.setFirstName(changes.getFirstName());
+        existing.setLastName(changes.getLastName());
+        existing.setEmail(changes.getEmail());
+        existing.setGroupName(changes.getGroupName());
+        existing.setCourse(changes.getCourse());
+        return repository.save(existing);
+    }
+
     public void delete(Long id) {
         if (!repository.existsById(id)) {
             throw new StudentNotFoundException(id);
