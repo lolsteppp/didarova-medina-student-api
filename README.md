@@ -7,7 +7,7 @@ Spring Boot CRUD application for managing students (DevOps Midterm).
 - **Group:** IT2-2313
 - **Stack:** Java 17, Spring Boot 3, Gradle, PostgreSQL 16, Docker, Docker Compose, Jenkins
 
-Status: v1.0 released - CRUD complete (Didarova Medina, ID 37944)
+Status: v1.0 released - CRUD complete and documented (Didarova Medina, ID 37944)
 
 ## API endpoints
 
